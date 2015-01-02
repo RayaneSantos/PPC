@@ -6,13 +6,11 @@ public class Banco {
 	private int saldo;
 	private Vector<ClienteSaque> fila = new Vector<ClienteSaque>();
 	
-	public int getSaldo()
-	{
+	public int getSaldo() {
 		return saldo;
 	}
 	
-	public void entrarNaFila(ClienteSaque cliente)
-	{
+	public void entrarNaFila(ClienteSaque cliente) {
 		fila.add(cliente);
 	}
 	
@@ -20,7 +18,8 @@ public class Banco {
 	{
 		if( !fila.isEmpty() )
 		{
-			try {
+			try 
+			{
 				ClienteSaque cliente = fila.elementAt(0);	
 				if(saldo >= valor)
 				{
@@ -32,7 +31,8 @@ public class Banco {
 				else {
 					cliente.wait();
 				}	
-			} catch (InterruptedException e) {
+			} 
+			catch (InterruptedException e) {
 					e.printStackTrace();
 			}
 		}
