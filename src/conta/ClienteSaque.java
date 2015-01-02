@@ -1,29 +1,22 @@
 package conta;
 
-import java.util.Random;
-
 public class ClienteSaque implements Runnable
 {
 	private Banco banco;
-	private Random rando = new Random( System.currentTimeMillis() );
+	private int tipo;
 	
-	public ClienteSaque(Banco banco) 
+	public ClienteSaque(Banco banco, int tipo) 
 	{
 		this.banco = banco;
+		this.tipo = tipo;
 	}
 	
 	@Override
 	public void run() {
-		try {
-		int valor = (rando.nextInt(3) + 1) * 100;
+	
 		banco.entrarNaFila(this);
-		banco.sacar(valor);
-		
-		
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+		banco.sacar(tipo * 100);
+
+		} 
 
 }
