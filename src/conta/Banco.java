@@ -1,54 +1,53 @@
 package conta;
 
-import java.util.Vector;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
-public class Banco {
+public class Banco 
+{
 	private int saldo;
-	private Vector<ClienteSaque> fila = new Vector<ClienteSaque>();
+	private Queue<Cliente> fila = new LinkedBlockingDeque<Cliente>();
 	
-	public int getSaldo() {
-		return saldo;
-	}
+	public int getSaldo() { return saldo; }
 	
-	public void entrarNaFila(ClienteSaque cliente) {
-		fila.add(cliente);
-	}
+	public int tamanhoDaFila() { return fila.size(); }
 	
-	public synchronized void sacar(int valor)
-	{
+	public synchronized void entrarNaFila(Cliente cliente) { fila.add(cliente); }
+	
+	public synchronized void atenderCliente() 
+	{	
 		if( !fila.isEmpty() )
 		{
+			System.out.println("Tamanho da fila: " + fila.size() );
+			
+			ClienteSaque cliente = (ClienteSaque) fila.remove();
+			
 			try 
-			{
-				ClienteSaque cliente = fila.elementAt(0);	
-				if(saldo >= valor)
+			{	
+				if( saldo >= cliente.getValor() )
 				{
-					fila.remove(0);
-					saldo -= valor;
+					saldo -= cliente.getValor();
+					Thread.sleep(2000);
+					System.out.println("Saque R$ " + cliente.getValor());
 					System.out.println("Saldo atual do banco: " + getSaldo());
 					notifyAll();
 				} 
 				else {
-					cliente.wait();
+					wait();
 				}	
 			} 
 			catch (InterruptedException e) {
-					e.printStackTrace();
+				System.err.println( e.getMessage() );
 			}
 		}
 	}
 	
-	public synchronized void depositar(int valor)
+	public synchronized void depositar(int valor) throws InterruptedException
 	{
+		System.out.println("Deposito R$ " + valor);
 		saldo += valor;
+		Thread.sleep(2000);
 		System.out.println("Saldo atual do banco: " + getSaldo());
 		notifyAll();
 	}
-	
-	public static void mostrarMensagem(String mensagem)
-	{
-		String nomeThread = Thread.currentThread().getName();
-		System.out.println("Cliente: " + nomeThread);
-	}
-
 }
