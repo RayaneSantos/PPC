@@ -1,22 +1,24 @@
 package conta;
 
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main 
 {
+	private static final int QUANTIDADE_POR_TIPO_CLIENTES = 20;
+	private static final int TOTAL_CLIENTES = QUANTIDADE_POR_TIPO_CLIENTES * 6;
+	
+	
 	private static Random random = new Random( System.currentTimeMillis() );
 	
 	public static void main(String[] args) throws InterruptedException
 	{
 		Banco banco = new Banco();
+		Thread caixa = new Thread( new Caixa(banco) );
+		caixa.start();
 		
-		Thread clienteDepositoTipo1 = null;
-		Thread clienteDepositoTipo2 = null;
-		Thread clienteDepositoTipo3 = null;
-		
-		Thread clienteSaqueTipo1 = null;
-		Thread clienteSaqueTipo2 = null;
-		Thread clienteSaqueTipo3 = null;
+		ExecutorService executor = Executors.newFixedThreadPool(20);
 		
 		int qtdDepositoTipo1 = 0;
 		int qtdDepositoTipo2 = 0;
@@ -28,62 +30,63 @@ public class Main
 		
 		int totalClientes = 0;
 		
-		while(totalClientes < 120 )
+		while(totalClientes < TOTAL_CLIENTES )
 		{
-			int moeda = random.nextInt(6) + 1;
+			int dado = random.nextInt(6) + 1;
 			
-			if(moeda == 1 && qtdDepositoTipo1 < 20)
+			if(dado == 1 && qtdDepositoTipo1 < QUANTIDADE_POR_TIPO_CLIENTES)
 			{
-				clienteDepositoTipo1 = new Thread( new ClienteDeposito(banco, 1) );
-				clienteDepositoTipo1.start();
+				Runnable clienteDepositoTipo1 = new ClienteDeposito(banco, 1);
+				executor.execute(clienteDepositoTipo1);
 				qtdDepositoTipo1++;
 				totalClientes++;
 			}
 			
-			if(moeda == 2 && qtdDepositoTipo2 < 20)
+			if(dado == 2 && qtdDepositoTipo2 < QUANTIDADE_POR_TIPO_CLIENTES)
 			{
-				clienteDepositoTipo2 = new Thread( new ClienteDeposito(banco, 2) );
-				clienteDepositoTipo2.start();
+				Runnable clienteDepositoTipo2 = new ClienteDeposito(banco, 2);
+				executor.execute(clienteDepositoTipo2);
 				qtdDepositoTipo2++;
 				totalClientes++;
 			}
 			
-			if(moeda == 3 && qtdDepositoTipo3 < 20)
+			if(dado == 3 && qtdDepositoTipo3 < QUANTIDADE_POR_TIPO_CLIENTES)
 			{
-				clienteDepositoTipo3 = new Thread( new ClienteDeposito(banco, 3) );
-				clienteDepositoTipo3.start();
+				Runnable clienteDepositoTipo3 = new ClienteDeposito(banco, 3);
+				executor.execute(clienteDepositoTipo3);
 				qtdDepositoTipo3++;
 				totalClientes++;
 			}
 			
-			if(moeda == 4 && qtdSaqueTipo1 < 20)
+			if(dado == 4 && qtdSaqueTipo1 < QUANTIDADE_POR_TIPO_CLIENTES)
 			{
-				clienteSaqueTipo1 = new Thread( new ClienteSaque(banco, 1) );
-				clienteSaqueTipo1.start();
+				Runnable clienteSaqueTipo1 = new ClienteSaque(banco, 1);
+				executor.execute(clienteSaqueTipo1);
 				qtdSaqueTipo1++;
 				totalClientes++;
 			}
 			
-			if(moeda == 5 && qtdSaqueTipo2 < 20)
+			if(dado == 5 && qtdSaqueTipo2 < QUANTIDADE_POR_TIPO_CLIENTES)
 			{
-				clienteSaqueTipo2 = new Thread( new ClienteSaque(banco, 2) );
-				clienteSaqueTipo2.start();
+				Runnable clienteSaqueTipo2 = new ClienteSaque(banco, 2);
+				executor.execute(clienteSaqueTipo2);
 				qtdSaqueTipo2++;
 				totalClientes++;
 			}
 			
-			if(moeda == 6 && qtdSaqueTipo3 < 20)
+			if(dado == 6 && qtdSaqueTipo3 < QUANTIDADE_POR_TIPO_CLIENTES)
 			{
-				clienteSaqueTipo3 = new Thread( new ClienteSaque(banco, 3) );
-				clienteSaqueTipo3.start();
+				Runnable clienteSaqueTipo3 = new ClienteSaque(banco, 3);
+				executor.execute(clienteSaqueTipo3);
 				qtdSaqueTipo3++;
 				totalClientes++;
 			}
-			
-			Thread.sleep(2000);
 		}
 		
-		//System.out.println("Deposito Tipo 1: " +  qtdDepositoTipo1 + " " + "Tipo 2: " +  qtdDepositoTipo2 + " " + "Tipo 3: " +  qtdDepositoTipo3);
-		//System.out.println("Saque Tipo 1: " +  qtdSaqueTipo1 + " " + "Tipo 2: " +  qtdSaqueTipo2 + " " + "Tipo 3: " +  qtdSaqueTipo3);
+		executor.shutdown();
+		
+		//System.out.println(banco.tamanhoDaFila());
+		//System.out.println("Deposito Tipo 1: " + qtdDepositoTipo1 + " " + "Tipo 2: " + qtdDepositoTipo2 + " " + "Tipo 3: " + qtdDepositoTipo3);
+		//System.out.println("Saque Tipo 1: " + qtdSaqueTipo1 + " " + "Tipo 2: " + qtdSaqueTipo2 + " " + "Tipo 3: " + qtdSaqueTipo3);
 	}
 }

@@ -1,21 +1,22 @@
 package conta;
 
-public class ClienteDeposito implements Runnable 
-{
-	private Banco banco;
-	private int tipo;
-	
+public class ClienteDeposito extends Cliente implements Runnable 
+{	
 	public ClienteDeposito(Banco banco, int tipo) 
 	{
-		this.banco = banco;
-		this.tipo = tipo;
+		super(banco, tipo);
 	}
 	
 	@Override
 	public void run() 
 	{
-		int valor = tipo * 100;
-		banco.depositar(valor);
+		try 
+		{
+			int valor = getTipo() * 100;
+			getBanco().depositar(valor);
+		} 
+		catch (InterruptedException e) {
+			System.err.println( e.getMessage() );
+		}
 	}
-
 }

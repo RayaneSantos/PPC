@@ -1,22 +1,20 @@
 package conta;
 
-public class ClienteSaque implements Runnable
+public class ClienteSaque extends Cliente implements Runnable
 {
-	private Banco banco;
-	private int tipo;
+	private int valor;
 	
 	public ClienteSaque(Banco banco, int tipo) 
 	{
-		this.banco = banco;
-		this.tipo = tipo;
+		super(banco, tipo);
 	}
 	
 	@Override
-	public void run() {
+	public void run() 
+	{
+		valor = getTipo() * 100;
+		getBanco().entrarNaFila(this);
+	}
 	
-		banco.entrarNaFila(this);
-		banco.sacar(tipo * 100);
-
-		} 
-
+	public int getValor() { return valor; }
 }
